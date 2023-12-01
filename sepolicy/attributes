@@ -1,0 +1,3 @@
+attribute hal_cavli;
+attribute hal_cavli_client;
+attribute hal_cavli_server;

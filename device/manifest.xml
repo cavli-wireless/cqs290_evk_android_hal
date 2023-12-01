@@ -1,0 +1,28 @@
+<manifest version="1.0" type="device" target-level="5">
+    <!-- Cavli HAL -->
+    <hal format="hidl">
+        <name>vendor.cavli.hardware.spi</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ISpi</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+
+    <hal format="hidl">
+        <name>vendor.cavli.automotive.vehicle</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IVehicle</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+
+    <sepolicy>
+        <version>27.0</version>
+    </sepolicy>
+
+
+</manifest>

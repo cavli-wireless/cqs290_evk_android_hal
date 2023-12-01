@@ -1,0 +1,15 @@
+package vendor.cavli.hardware.spi@1.0;
+
+interface ICavspi {
+    // Send data to the hardware
+    sendData(vec<uint8_t> data) generates (bool success);
+
+    // Read data from the hardware
+    readData(vec<uint8_t> data, uint32_t length) generates (int32_t bytesRead);
+
+    // Open a connection to the hardware
+    openConnection(string device) generates (bool success);
+
+    // Close the connection to the hardware
+    closeConnection() generates (bool success);
+};

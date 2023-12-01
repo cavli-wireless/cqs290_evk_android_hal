@@ -1,0 +1,10 @@
+type hal_cavli_data_file, file_type, data_file_type;
+
+# Define domain
+type cav_hal_cavli, domain;
+hal_server_domain(cav_hal_cavli, hal_cavli);
+
+type cav_hal_cavli_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(cav_hal_cavli)
+
+add_hwservice(hal_cavli, hal_cavli_hwservice);
