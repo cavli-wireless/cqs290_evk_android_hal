@@ -1,25 +1,26 @@
 #ifndef ANDROID_HARDWARE_NFC_V1_0_NFC_H
 #define ANDROID_HARDWARE_NFC_V1_0_NFC_H
 
-#include <vendor/cavli/hardware/spi/1.0/ICavspi.h>
+#include <vendor/cavli/hardware/spi/1.0/ISpi.h>
 #include <hidl/Status.h>
 #include <hardware/hardware.h>
 #include <hardware/nfc.h>
 
 namespace vendor {
 namespace cavli {
-namespace cav_spi {
+namespace hardware {
+namespace spi {
 namespace V1_0 {
 namespace implementation {
 
-using ::vendor::cavli::hardware::spi::V1_0::ICavspi;
+using ::vendor::cavli::hardware::spi::V1_0::ISpi;
 using ::android::hardware::Return;
 using ::android::hardware::Void;
 using ::android::hardware::hidl_vec;
 using ::android::hardware::hidl_string;
 using ::android::sp;
 
-struct Cavspi : public ICavspi {
+struct Cavspi : public ISpi {
 
     Return<bool> sendData(const hidl_vec<uint8_t>& data);
 
@@ -34,7 +35,8 @@ struct Cavspi : public ICavspi {
 
 }  // implementation
 }  // namespace V1_0
-}  // namespace cav_spi
+}  // namespace spi
+}  // namespace hardware
 }  // namespace cavli
 }  // namespace vendor
 

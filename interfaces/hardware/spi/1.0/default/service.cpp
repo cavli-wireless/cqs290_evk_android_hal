@@ -1,6 +1,6 @@
 #define LOG_TAG "vendor.cavli.cav_spi@1.0-service"
 
-#include <vendor/cavli/hardware/spi/1.0/ICavspi.h>
+#include <vendor/cavli/hardware/spi/1.0/ISpi.h>
 #include <hidl/HidlTransportSupport.h>
 
 #include "spi.h"

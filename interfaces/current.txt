@@ -1,1 +1,1 @@
-5cd106d61274f171d656e8136996b1dbd3f773e4eff4203a01ab78e1183a1d07 vendor.cavli.cav_spi@1.0::ICavspi
+5cd106d61274f171d656e8136996b1dbd3f773e4eff4203a01ab78e1183a1d07 vendor.cavli.cav_spi@1.0::ISpi
