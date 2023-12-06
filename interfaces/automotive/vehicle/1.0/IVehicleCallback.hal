@@ -40,4 +40,10 @@ interface IVehicleCallback {
     oneway onPropertySetError(StatusCode errorCode,
                               int32_t propId,
                               int32_t areaId);
+
+    /**
+     *
+     */
+    oneway onConnected();
+
 };

@@ -20,6 +20,8 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <thread>
+#include <chrono>
 
 #include <list>
 #include <map>
@@ -50,7 +52,16 @@ using ::android::sp;
  * etc. Vendors must implement VehicleHal class.
  */
 class CavliVehicle : public IVehicle {
+private:
+    sp<IVehicleCallback> mCallback;
+    std::thread workerThread;
+    int interval;
+    bool stopFlag;
+
+    void task();
 public:
+    CavliVehicle();
+    ~CavliVehicle();
     // ---------------------------------------------------------------------------------------------
     // Methods derived from IVehicle
     Return<void> getAllPropConfigs(getAllPropConfigs_cb _hidl_cb)  override;

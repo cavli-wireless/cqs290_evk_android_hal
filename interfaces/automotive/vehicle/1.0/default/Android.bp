@@ -1,14 +1,7 @@
 cc_binary {
     name: "vendor.cavli.automotive.vehicle@1.0-service",
-
-    vintf_fragments: [
-        "vendor.cavli.automotive.vehicle@1.0-service.xml",
-    ],
-
-    init_rc: ["vendor.cavli.automotive.vehicle@1.0-service.rc"],
-
+    defaults: ["hidl_defaults"],
     vendor: true,
-
     relative_install_path: "hw",
 
     srcs: ["main.cpp",
@@ -26,6 +19,9 @@ cc_binary {
         "libhardware_legacy",
         "vendor.cavli.automotive.vehicle@1.0",
     ],
+
+    init_rc: ["vendor.cavli.automotive.vehicle@1.0-service.rc"],
+    // vintf_fragments: ["vendor.cavli.automotive.vehicle@1.0-service.xml"],
 
     static_libs: [
 

@@ -1,2 +1,2 @@
-vendor.cavli.hardware.spi::ICavspi       u:object_r:hal_cavli_hwservice:s0
+vendor.cavli.hardware.spi::ICavspi              u:object_r:hal_cavli_hwservice:s0
 vendor.cavli.automotive.vehicle::IVehicle       u:object_r:hal_cavli_hwservice:s0

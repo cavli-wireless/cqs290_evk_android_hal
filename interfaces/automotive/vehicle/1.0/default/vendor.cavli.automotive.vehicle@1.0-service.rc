@@ -1,4 +1,5 @@
-service vendor.vehicle-hal-2.0 /vendor/bin/hw/android.hardware.automotive.vehicle@2.0-service
+service vendor.cavli.vehicle-hal-1.0 /vendor/bin/hw/vendor.cavli.automotive.vehicle@1.0-service
+    interface vendor.cavli.automotive.vehicle@1.0::IVehicle default
     class hal
     user system
     group system

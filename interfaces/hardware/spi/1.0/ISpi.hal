@@ -1,6 +1,6 @@
 package vendor.cavli.hardware.spi@1.0;
 
-interface ICavspi {
+interface ISpi {
     // Send data to the hardware
     sendData(vec<uint8_t> data) generates (bool success);
 

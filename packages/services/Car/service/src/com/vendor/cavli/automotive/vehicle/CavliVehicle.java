@@ -63,9 +63,9 @@ public class CavliVehicle {
         try {
             return IVehicle.getService();
         } catch (RemoteException e) {
-
+            Log.e(TAG, "RemoteException " + e.getMessage());
         } catch (NoSuchElementException e) {
-
+            Log.e(TAG, "NoSuchElementException " + e.getMessage());
         }
 
         return null;
@@ -74,8 +74,15 @@ public class CavliVehicle {
 
     public CavliVehicle(Looper looper, ICavliVehicleCallback callback) {
         mVehicle = getVehicle();
+        if ( null != mVehicle ) {
+            Log.i(TAG, "Bind service SUCCESS");
+        }
         Handler handler = new CallbackHandler(looper, callback);
         mInternalCallback = new VehicleCallback(handler);
+        if ( callback != null ) {
+            Log.i(TAG, "Verify connected");
+            callback.onConnected();
+        }
     }
 
     public ArrayList<VehiclePropConfig> getAllPropConfigs() throws RemoteException {
@@ -222,32 +229,37 @@ public class CavliVehicle {
         private static final int MSG_ON_PROPERTY_SET = 1;
         private static final int MSG_ON_PROPERTY_EVENT = 2;
         private static final int MSG_ON_SET_ERROR = 3;
+        private static final int MSG_ON_CONNECTED = 4;
 
-        private final WeakReference<ICavliVehicleCallback> mCallback;
+        private ICavliVehicleCallback mCallback = null;
 
         CallbackHandler(Looper looper, ICavliVehicleCallback callback) {
             super(looper);
-            mCallback = new WeakReference<ICavliVehicleCallback>(callback);
+            Log.i(TAG, "Update callback for later use");
+            mCallback = callback;
         }
 
         @Override
         public void handleMessage(Message msg) {
-            ICavliVehicleCallback callback = mCallback.get();
-            if (callback == null) {
+            if (mCallback == null) {
                 Log.i(TAG, "handleMessage null callback");
                 return;
             }
 
             switch (msg.what) {
                 case MSG_ON_PROPERTY_EVENT:
-                    callback.onPropertyEvent((ArrayList<VehiclePropValue>) msg.obj);
+                    mCallback.onPropertyEvent((ArrayList<VehiclePropValue>) msg.obj);
                     break;
                 case MSG_ON_PROPERTY_SET:
-                    callback.onPropertySet((VehiclePropValue) msg.obj);
+                    mCallback.onPropertySet((VehiclePropValue) msg.obj);
                     break;
                 case MSG_ON_SET_ERROR:
                     PropertySetError obj = (PropertySetError) msg.obj;
-                    callback.onPropertySetError(obj.errorCode, obj.propId, obj.areaId);
+                    mCallback.onPropertySetError(obj.errorCode, obj.propId, obj.areaId);
+                    break;
+                case MSG_ON_CONNECTED:
+                    Log.i(TAG, "Handle event connected");
+                    mCallback.onConnected();
                     break;
                 default:
                     Log.e(TAG, "Unexpected message: " + msg.what);
@@ -281,6 +293,13 @@ public class CavliVehicle {
                     mHandler, CallbackHandler.MSG_ON_SET_ERROR,
                     new PropertySetError(errorCode, propId, areaId)));
         }
+
+        @Override
+        public void onConnected() {
+            mHandler.sendMessage(Message.obtain(
+                    mHandler, CallbackHandler.MSG_ON_CONNECTED, null));
+        }
+
     }
 
 }

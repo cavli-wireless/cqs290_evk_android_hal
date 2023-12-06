@@ -1,0 +1,19 @@
+cc_binary {
+    name: "vehicel_client_test",
+    vendor: true,
+    srcs: [
+        "main.cpp"
+    ],
+
+    shared_libs: [
+        "liblog",
+        "libcutils",
+        "libdl",
+        "libbase",
+        "libutils",
+        "libhardware",
+        "libhidlbase",
+        "vendor.cavli.automotive.vehicle@1.0",
+    ],
+
+}

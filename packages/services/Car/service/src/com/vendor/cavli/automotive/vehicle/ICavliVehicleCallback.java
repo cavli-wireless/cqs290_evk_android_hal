@@ -26,4 +26,6 @@ public interface ICavliVehicleCallback {
     void onPropertySet(VehiclePropValue propValue);
 
     void onPropertySetError(int errorCode, int propId, int areaId);
+
+    void onConnected();
 }
