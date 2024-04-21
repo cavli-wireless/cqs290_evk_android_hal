@@ -1,2 +1,1 @@
 /(vendor|system/vendor)/bin/hw/vendor\.cavli\.hardware\.spi@1\.0-service u:object_r:cav_hal_cavli_exec:s0
-/(vendor|system/vendor)/bin/hw/vendor\.cavli\.automotive\.vehicle@1\.0-service u:object_r:cav_hal_cavli_exec:s0
