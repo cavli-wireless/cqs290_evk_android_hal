@@ -1,12 +1,11 @@
 java_library_static {
-    name: "cavli-car-service-lib",
+    name: "cavli-spi-service-lib",
 
     srcs: [
         "src/**/*.java",
     ],
 
     static_libs: [
-        "vendor.cavli.automotive.vehicle-V1.0-java"
-
+        "vendor.cavli.hardware.spi-V1.0-java"
     ],
 }
