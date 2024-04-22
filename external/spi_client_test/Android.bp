@@ -1,5 +1,5 @@
 cc_binary {
-    name: "vehicel_client_test",
+    name: "spi_client_test",
     vendor: true,
     srcs: [
         "main.cpp"
@@ -13,7 +13,7 @@ cc_binary {
         "libutils",
         "libhardware",
         "libhidlbase",
-        "vendor.cavli.automotive.vehicle@1.0",
+        "vendor.cavli.hardware.spi@1.0",
     ],
 
 }
