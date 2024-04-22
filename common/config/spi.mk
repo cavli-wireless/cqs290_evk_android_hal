@@ -1,5 +1,6 @@
 PRODUCT_PACKAGES += vendor.cavli.hardware.spi@1.0 \
                     vendor.cavli.hardware.spi@1.0-service \
+                    spi_client_test
 
 
 # Add cavli manifest
