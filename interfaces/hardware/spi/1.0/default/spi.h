@@ -1,6 +1,7 @@
 #ifndef ANDROID_HARDWARE_NFC_V1_0_NFC_H
 #define ANDROID_HARDWARE_NFC_V1_0_NFC_H
 
+#include <string>
 #include <vendor/cavli/hardware/spi/1.0/ISpi.h>
 #include <hidl/Status.h>
 #include <hardware/hardware.h>
@@ -21,6 +22,11 @@ using ::android::hardware::hidl_string;
 using ::android::sp;
 
 struct Cavspi : public ISpi {
+private:
+    int mSpidev;
+    char * tx_buf;
+    char * rx_buf;
+private:
 
     Return<bool> sendData(const hidl_vec<uint8_t>& data);
 

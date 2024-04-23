@@ -1,0 +1,16 @@
+cc_binary {
+    name: "spidev_test",
+    vendor: true,
+    srcs: [
+        "spidev_test.c"
+    ],
+
+    shared_libs: [
+        "liblog",
+        "libcutils",
+        "libdl",
+        "libbase",
+        "libutils",
+    ],
+
+}
