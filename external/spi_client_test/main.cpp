@@ -29,7 +29,7 @@ int main(void) {
 
     ALOGI("Bind to spi service success");
     
-    bool ret = spi->openConnection("spidev0.0");
+    bool ret = spi->openConnection("/dev/spidev0.0");
 
     ALOGI("openConnection=%s", ret?"SUCCESS":"FAILED");
 
