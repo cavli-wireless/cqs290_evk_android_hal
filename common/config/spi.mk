@@ -2,7 +2,8 @@ PRODUCT_PACKAGES += vendor.cavli.hardware.spi@1.0 \
                     vendor.cavli.hardware.spi@1.0-service \
                     spi_client_test \
                     spidev_test \
-                    cavli-spi-service-lib
+                    cavli-spi-service-lib \
+                    cavlidemo
 
 
 # Add cavli manifest

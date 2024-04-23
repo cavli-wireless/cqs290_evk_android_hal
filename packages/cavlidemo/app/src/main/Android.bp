@@ -1,0 +1,19 @@
+android_app {
+    name: "cavlidemo",
+    platform_apis: true,
+    certificate: "platform",
+    privileged: true,
+
+    srcs: [
+        "./**/*.java"
+    ],
+
+    static_libs: [
+        "androidx.recyclerview_recyclerview",
+        "androidx.transition_transition",
+        "androidx.legacy_legacy-support-v4",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx-constraintlayout_constraintlayout-solver",
+        "cavli-spi-service-lib"
+    ],
+}
