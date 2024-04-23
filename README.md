@@ -59,7 +59,7 @@ Application: Using peripherals from an Android app is rare and usually serves sp
     cd -
     # top of qssi_12
     cd vendor
-    patch -p1 < common/patches/0001-compatibility-Add-new-HAL-to-fw-matrix.patch
+    patch -p1 < common/patches/0001-compatibility-qssi_12-Add-new-HAL-to-fw-matrix.patch 
     # qssi_12 only needs to update the compatibility framework, only vendor needs to add device.
     ```
   Step 3: Build bengal_2w + qssi_12, use the script to generate super images, and you're done.
