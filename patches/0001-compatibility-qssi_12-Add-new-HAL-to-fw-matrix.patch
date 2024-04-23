@@ -1,0 +1,29 @@
+From ece6e351988819b9eba99caa07e323bb16410116 Mon Sep 17 00:00:00 2001
+From: khoado <khoado@cavliwireless.com>
+Date: Tue, 23 Apr 2024 06:00:43 +0000
+Subject: [PATCH] compatibility::qssi_12:: Add new HAL to fw matrix
+
+
+diff --git a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+index 8b26e3fc..8017e405 100644
+--- a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
++++ b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+@@ -1185,4 +1185,15 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
+         </interface>
+     </hal>
+ 
++    <hal format="hidl" optional="true">
++        <name>vendor.cavli.hardware.spi</name>
++        <transport>hwbinder</transport>
++        <impl level="generic"></impl>
++        <version>1.0</version>
++        <interface>
++            <name>ISpi</name>
++            <instance>default</instance>
++        </interface>
++    </hal>
++
+ </compatibility-matrix>
+-- 
+2.43.2
+
