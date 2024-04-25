@@ -1,8 +1,8 @@
 # DEMO
 The following demo instructs you on how to use I2C/SPI/UART from an Android Application. Some information needs to be clarified as follows:
 
-Android application: We understand that the Android app is written in Java/Kotlin/C/C++. Android is built from Android Studio or built along with the source code.
-Application: Using peripherals from an Android app is rare and usually serves specific purposes such as creating an IPC channel between chips on the board, integrating existing software/stacks on other platforms, etc. If you need to use I2C/SPI/UART to communicate with peripherals or sensors, it's advisable to use a different approach.
+- Android application: We understand that the Android app is written in Java/Kotlin/C/C++. Android is built from Android Studio or built along with the source code.
+- Application: Using peripherals from an Android app is rare and usually serves specific purposes such as creating an IPC channel between chips on the board, integrating existing software/stacks on other platforms, etc. If you need to use I2C/SPI/UART to communicate with peripherals or sensors, it's advisable to use a different approach.
 
 
 # How to run DEMO
