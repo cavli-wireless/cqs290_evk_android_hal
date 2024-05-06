@@ -1,0 +1,10 @@
+package vendor.cavli.hardware.uart@1.0;
+
+interface IUartCallback {
+    /**
+     * Callback method invoked when data is received.
+     *
+     * @param data The received data.
+     */
+    onDataReceived(vec<uint8_t> data);
+};

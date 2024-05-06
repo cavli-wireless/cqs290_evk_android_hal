@@ -1,0 +1,35 @@
+package vendor.cavli.hardware.uart@1.0;
+
+import vendor.cavli.hardware.uart@1.0::IUartCallback;
+
+interface IUart {
+    /**
+     * Transmit data over UART.
+     *
+     * @param data The data to be transmitted.
+     * @return Returns the number of bytes successfully transmitted.
+     */
+    transmit(vec<uint8_t> data) generates (Status status);
+
+    /**
+     * Receive data from UART.
+     *
+     * @param length The maximum length of data to receive.
+     * @return Returns the received data.
+     */
+    receive(int32_t length) generates (Status status, vec<uint8_t> data);
+
+    /**
+     * Register a callback to receive data asynchronously.
+     *
+     * @param callback The callback object to be registered.
+     */
+    registerCallback(IUartCallback callback);
+
+    /**
+     * Configure UART interface.
+     *
+     * @param config The configuration parameters for UART.
+     */
+    configure(UartConfig config) generates (Status status);
+};

@@ -1,0 +1,29 @@
+From 17dbdcb9cf1ffa49959f99dd4ef339c5900d999c Mon Sep 17 00:00:00 2001
+From: Do Dang Khoa <khoa.dang@cavliwireless.com>
+Date: Mon, 6 May 2024 22:47:58 +0700
+Subject: [PATCH] compatibility::qssi_12:: Add new HAL UART to fw matrix
+
+
+diff --git a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+index 8017e405..cec4e648 100644
+--- a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
++++ b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+@@ -1196,4 +1196,15 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
+         </interface>
+     </hal>
+ 
++    <hal format="hidl" optional="true">
++        <name>vendor.cavli.hardware.uart</name>
++        <transport>hwbinder</transport>
++        <impl level="generic"></impl>
++        <version>1.0</version>
++        <interface>
++            <name>IUart</name>
++            <instance>default</instance>
++        </interface>
++    </hal>
++
+ </compatibility-matrix>
+-- 
+2.40.1
+

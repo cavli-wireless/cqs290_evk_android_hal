@@ -10,4 +10,14 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="hidl">
+        <name>vendor.cavli.hardware.uart</name>
+        <transport>hwbinder</transport>
+        <impl level="generic"></impl>
+        <version>1.0</version>
+        <interface>
+            <name>IUart</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
 </manifest>

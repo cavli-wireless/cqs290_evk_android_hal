@@ -1,0 +1,23 @@
+cc_binary {
+    name: "vendor.cavli.hardware.uart@1.0-service",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+    vendor: true,
+    init_rc: ["vendor.cavli.hardware.uart@1.0-service.rc"],
+    srcs: [
+        "service.cpp",
+        "uart.cpp",
+    ],
+
+    shared_libs: [
+        "liblog",
+        "libcutils",
+        "libdl",
+        "libbase",
+        "libutils",
+        "libhardware",
+        "libhidlbase",
+        "vendor.cavli.hardware.uart@1.0",
+    ],
+
+}

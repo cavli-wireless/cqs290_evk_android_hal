@@ -1,1 +1,2 @@
 vendor.cavli.hardware.spi::ISpi                 u:object_r:hal_cavli_hwservice:s0
+vendor.cavli.hardware.uart::IUart               u:object_r:hal_cavli_hwservice:s0

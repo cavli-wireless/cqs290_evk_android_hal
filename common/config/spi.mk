@@ -5,6 +5,8 @@ PRODUCT_PACKAGES += vendor.cavli.hardware.spi@1.0 \
                     cavli-spi-service-lib \
                     cavlidemo
 
+PRODUCT_PACKAGES += vendor.cavli.hardware.uart@1.0 \
+                    vendor.cavli.hardware.uart@1.0-service
 
 # Add cavli manifest
 DEVICE_MANIFEST_FILE += vendor/common/device/manifest.xml
