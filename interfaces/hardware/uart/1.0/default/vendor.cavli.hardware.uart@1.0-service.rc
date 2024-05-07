@@ -1,4 +1,4 @@
-service vendor.cav_spi_hal_service /vendor/bin/hw/vendor.cavli.hardware.uart@1.0-service
+service vendor.cav_uart_hal_service /vendor/bin/hw/vendor.cavli.hardware.uart@1.0-service
     class hal
     user root
     group root
