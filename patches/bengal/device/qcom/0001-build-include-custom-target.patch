@@ -1,20 +1,19 @@
-From 935a2c7de96afb2830715b5836065c0479c02de9 Mon Sep 17 00:00:00 2001
+From e7cf43ab213d02cf36346b165e07a261654255aa Mon Sep 17 00:00:00 2001
 From: "khoa.dang" <khoa.dang@cavliwireless.com>
-Date: Tue, 23 Apr 2024 03:20:34 +0000
+Date: Wed, 8 May 2024 00:02:03 +0000
 Subject: [PATCH] build:: include custom target
 
 
 diff --git a/bengal_2w/bengal_2w.mk b/bengal_2w/bengal_2w.mk
-index 02729e2..a988ee5 100644
+index f3cefa1..aa7c0d6 100644
 --- a/bengal_2w/bengal_2w.mk
 +++ b/bengal_2w/bengal_2w.mk
-@@ -399,3 +399,6 @@ $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
+@@ -399,3 +399,5 @@ $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
  $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
  ###################################################################################
- include vendor/cavli/cqs290/cqs290.mk
-+
-+# Include to build spi demo
+ 
 +include vendor/common/common/config/spi.mk
++
 -- 
 2.7.4
 
