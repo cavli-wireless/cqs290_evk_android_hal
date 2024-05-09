@@ -4,6 +4,16 @@ import vendor.cavli.hardware.uart@1.0::IUartCallback;
 
 interface IUart {
     /**
+     * Open
+     */
+    open_port(string name) generates (Status status);
+
+    /**
+     * Close
+     */
+    close_port() generates (Status status);
+
+    /**
      * Transmit data over UART.
      *
      * @param data The data to be transmitted.

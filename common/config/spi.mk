@@ -6,7 +6,8 @@ PRODUCT_PACKAGES += vendor.cavli.hardware.spi@1.0 \
                     cavlidemo
 
 PRODUCT_PACKAGES += vendor.cavli.hardware.uart@1.0 \
-                    vendor.cavli.hardware.uart@1.0-service
+                    vendor.cavli.hardware.uart@1.0-service \
+                    uart_client_test
 
 # Add cavli manifest
 DEVICE_MANIFEST_FILE += vendor/common/device/manifest.xml

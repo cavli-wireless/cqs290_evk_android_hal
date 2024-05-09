@@ -7,6 +7,16 @@
 #include <hardware/hardware.h>
 #include <hardware/nfc.h>
 
+extern "C" {
+    #include "fdio.h"
+    #include "split.h"
+    #include "term.h"
+    #ifdef LINENOISE
+    #include "linenoise-1.0/linenoise.h"
+    #endif
+    #include "custbaud.h"
+}
+
 namespace vendor {
 namespace cavli {
 namespace hardware {
@@ -23,15 +33,52 @@ using ::android::sp;
 
 struct Cavuart : public IUart {
 private:
+    int tty_fd;
 
 private:
+    int convert_baud(UartBaudRate baud);
+    int convert_stopbits(UartStopBits stopbits);
+    flowcntrl_e convert_flow(UartHardwareFlowControl flow);
+    parity_e convert_parity(UartParity parity);
 
+    /**
+     * Open
+     */
+    Return<Status> open_port(const hidl_string& name);
+
+    /**
+     * Close
+     */
+    Return<Status> close_port();
+
+    /**
+     * Transmit data over UART.
+     *
+     * @param data The data to be transmitted.
+     * @return Returns the number of bytes successfully transmitted.
+     */
     Return<Status> transmit(const hidl_vec<uint8_t>& data);
 
+    /**
+     * Receive data from UART.
+     *
+     * @param length The maximum length of data to receive.
+     * @return Returns the received data.
+     */
     Return<void> receive(int32_t length, receive_cb _hidl_cb);
 
+    /**
+     * Register a callback to receive data asynchronously.
+     *
+     * @param callback The callback object to be registered.
+     */
     Return<void> registerCallback(const sp<IUartCallback>& callback);
 
+    /**
+     * Configure UART interface.
+     *
+     * @param config The configuration parameters for UART.
+     */
     Return<Status> configure(const UartConfig& config);
 };
 

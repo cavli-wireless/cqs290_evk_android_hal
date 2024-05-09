@@ -4,9 +4,31 @@ cc_binary {
     relative_install_path: "hw",
     vendor: true,
     init_rc: ["vendor.cavli.hardware.uart@1.0-service.rc"],
+
+    local_include_dirs: [
+        "picocom",
+    ],
+
+    cflags: [
+        "-DVERSION_STR=\"3.2a\"",
+        "-DTTY_Q_SZ=0",
+        "-DHIGH_BAUD",
+        "-DUSE_FLOCK",
+        "-DLINENOISE",
+        "-DHISTFILE=\".picocom_history\"",
+        "-Wno-error","-Wno-unused-parameter"
+    ],
+
     srcs: [
         "service.cpp",
         "uart.cpp",
+        "picocom/picocom.c",
+        "picocom/term.c",
+        "picocom/fdio.c",
+        "picocom/split.c",
+        "picocom/termios2.c",
+        "picocom/custbaud.c",
+        "picocom/linenoise-1.0/linenoise.c",
     ],
 
     shared_libs: [
