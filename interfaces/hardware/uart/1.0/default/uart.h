@@ -2,6 +2,11 @@
 #define ANDROID_HARDWARE_NFC_V1_0_NFC_H
 
 #include <string>
+#include <thread>
+#include <chrono>
+#include <utility>
+#include <condition_variable>
+
 #include <vendor/cavli/hardware/uart/1.0/IUart.h>
 #include <hidl/Status.h>
 #include <hardware/hardware.h>
@@ -33,7 +38,13 @@ using ::android::sp;
 
 struct Cavuart : public IUart {
 private:
+    const int TIMEOUT = 10;
+    const int BUFFER_SIZE = 1024;
+private:
     int tty_fd;
+    std::thread * listenner;
+    bool keep_run;
+    sp<IUartCallback> __callback = nullptr;
 
 private:
     int convert_baud(UartBaudRate baud);

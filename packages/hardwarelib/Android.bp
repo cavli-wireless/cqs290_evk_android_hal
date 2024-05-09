@@ -1,11 +1,12 @@
 java_library_static {
-    name: "cavli-spi-service-lib",
+    name: "cavli-hw-service-lib",
 
     srcs: [
         "src/**/*.java",
     ],
 
     static_libs: [
-        "vendor.cavli.hardware.spi-V1.0-java"
+        "vendor.cavli.hardware.spi-V1.0-java",
+        "vendor.cavli.hardware.uart-V1.0-java"
     ],
 }

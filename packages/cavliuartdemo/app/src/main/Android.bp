@@ -1,0 +1,21 @@
+android_app {
+    name: "cavliuartdemo",
+    platform_apis: true,
+    certificate: "platform",
+    privileged: true,
+
+    srcs: [
+        "./**/*.java"
+    ],
+
+    static_libs: [
+        "androidx.appcompat_appcompat",
+        "com.google.android.material_material",
+        "androidx.recyclerview_recyclerview",
+        "androidx.transition_transition",
+        "androidx.legacy_legacy-support-v4",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx-constraintlayout_constraintlayout-solver",
+        "cavli-hw-service-lib"
+    ],
+}
