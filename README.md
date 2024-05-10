@@ -24,7 +24,7 @@ The following demo instructs you on how to use I2C/SPI/UART from an Android Appl
   - Step 4: Check the results on the oscilloscope. You can refer to the following video.
   - Step 5: Run the Java/Kotlin demo. Open the app with the following command:
     ```
-    adb shell am start -n com.example.demo/.MainActivity
+    adb shell am start -n com.example.cavliuartdemo/.MainActivity
     ```
   - Step 6: Press the Run button on the screen and observe the results on the oscilloscope.
 
@@ -43,23 +43,35 @@ The following demo instructs you on how to use I2C/SPI/UART from an Android Appl
     ```
     # bengal_2w
     cd vendor
-    git clone https://github.com/cavli-wireless/valeo_cqs290_android_hal -b common/demo_spi
-    # rename to common ( mandatory )
-    mv valeo_cqs290_android_hal common
+    git clone https://github.com/cavli-wireless/valeo_cqs290_android_hal -b common/demo_custom_hal common
     # similarly for qssi_12
     ```
   - Step 2 : Apply patches
     ```
     # top of bengal_2w
     cd vendor
-    patch -p1 < common/patches/0001-compatibility-Add-new-HAL-to-fw-matrix.patch
+    patch -p1 < common/patches/bengal/vendor/000*
     cd ../device/qcom
-    patch -p1 < ../../vendor/common/patches/0001-build-include-custom-target.patch
+    patch -p1 < ../../vendor/common/patches/bengal/device/qcom/000*
     cd -
     # top of qssi_12
     cd vendor
-    patch -p1 < common/patches/0001-compatibility-qssi_12-Add-new-HAL-to-fw-matrix.patch 
+    patch -p1 < common/patches/qssi/vendor/000*
     cd ../device/qcom
-    patch -p1 < ../../vendor/common/patches/0001-qssi-build-include-target-for-spi-demo.patch
+    patch -p1 < ../../vendor/common/patches/qssi/device/qcom/000*
     ```
   Step 3: Build bengal_2w + qssi_12, use the script to generate super images, and you're done.
+
+
+### Method 2: Clone ALL
+  More detail information please check : https://github.com/cavli-wireless/cqs290_dev_manifest/tree/nesh/demo_custom_hal ( README.md )
+#### Clone QSSI_12
+  ```
+  repo init --depth=1 -u git@github.com:cavli-wireless/cqs290_dev_manifest.git -b nesh/demo_custom_hal -m android_12_dev.xml --repo-url=https://git.codelinaro.org/clo/tools/repo.git --repo-branch=qc-stable
+  repo sync -j64
+  ```
+#### Clone bengal_2w
+  ```
+  repo init --depth=1 -u git@github.com:cavli-wireless/cqs290_dev_manifest.git -b nesh/demo_custom_hal -m android_11_dev.xml --repo-url=https://git.codelinaro.org/clo/tools/repo.git --repo-branch=qc-stable
+  repo sync -j64
+  ```
