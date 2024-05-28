@@ -130,6 +130,20 @@ const char *flow_str[] = {
 #define M_O_DFL 0
 #define M_E_DFL (M_DELBS | M_CRCRLF)
 
+#ifndef TIOCPMGET
+#define TIOCPMGET 0x544D /* PM get */
+#endif
+#ifndef TIOCPMPUT
+#define TIOCPMPUT 0x544E /* PM put */
+#endif
+#ifndef TIOCPMACT
+#define TIOCPMACT 0x544F /* PM is active */
+#endif
+
+#define USERIAL_OP_CLK_ON       TIOCPMGET    /* PM get */
+#define USERIAL_OP_CLK_OFF      TIOCPMPUT    /* PM put */
+#define USERIAL_OP_CLK_STATE    TIOCPMACT       /* PM is active */
+
 /* character mapping names */
 struct map_names_s {
     const char *name;
@@ -684,6 +698,7 @@ cleanup (int drain, int noreset, int hup)
                comments in term.c/term_exitfunc() for more. */
             flock(tty_fd, LOCK_UN);
 #endif
+            ioctl(tty_fd, USERIAL_OP_CLK_OFF);
             close(tty_fd);
             tty_fd = -1;
         }
@@ -2080,16 +2095,18 @@ main (int argc, char *argv[])
     }
 #endif
 
+    ioctl(tty_fd, USERIAL_OP_CLK_ON);
+
     if ( opts.noinit ) {
         r = term_add(tty_fd);
     } else {
         r = term_set(tty_fd,
-                     1,              /* raw mode. */
+                     0,              /* raw mode. */
                      opts.baud,      /* baud rate. */
                      opts.parity,    /* parity. */
                      opts.databits,  /* data bits. */
                      opts.stopbits,  /* stop bits. */
-                     opts.flow,      /* flow control. */
+                     FC_NONE,      /* flow control. */
                      1,              /* local or modem */
                      !opts.noreset); /* hup-on-close. */
     }

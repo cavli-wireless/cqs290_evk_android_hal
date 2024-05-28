@@ -25,6 +25,20 @@
 #include <utility>
 #include <condition_variable>
 
+#ifndef TIOCPMGET
+#define TIOCPMGET 0x544D /* PM get */
+#endif
+#ifndef TIOCPMPUT
+#define TIOCPMPUT 0x544E /* PM put */
+#endif
+#ifndef TIOCPMACT
+#define TIOCPMACT 0x544F /* PM is active */
+#endif
+
+#define USERIAL_OP_CLK_ON       TIOCPMGET   /* PM get */
+#define USERIAL_OP_CLK_OFF      TIOCPMPUT   /* PM put */
+#define USERIAL_OP_CLK_STATE    TIOCPMACT   /* PM is active */
+
 extern "C" {
     #include "fdio.h"
     #include "split.h"
@@ -170,47 +184,54 @@ namespace implementation {
 
     Return<Status> Cavuart::open_port(const hidl_string& name) {
         (void)name;
+        Return<Status> ret = Status::NO_ERROR;
+        if( tty_fd > 0 ) {
+            ioctl(tty_fd, USERIAL_OP_CLK_OFF);
+            close(tty_fd);
+            tty_fd = -1;
+        }
         tty_fd = open(name.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-        keep_run = true;
-        
-        listenner = new std::thread([&](){
-            struct pollfd fds[1];
-            int ret;
+        if ( tty_fd > 0 ) {
+            ioctl(tty_fd, USERIAL_OP_CLK_ON);
+            keep_run = true;
+            
+            listenner = new std::thread([&](){
+                struct pollfd fds[1];
+                int ret;
 
-            fds[0].fd = tty_fd;
-            fds[0].events = POLLIN;
-            while(keep_run) {
-                ret = poll(fds, 1, TIMEOUT);
-                if (ret < 0) {
-                    // FAILED. MUST exist
-                    ALOGE("POLL FAILED, force stop");
-                    keep_run = false;
-                    break;
-                } else if (ret == 0) {
-                    // TIMEOUT.
-                } else {
-                    char buffer[BUFFER_SIZE];
-                    ssize_t bytes_read;
-                    // Read all available data
-                    while ((bytes_read = read(tty_fd, buffer, sizeof(buffer))) > 0) {
-                        std::string __str(buffer, bytes_read);
-
-                        if(__callback!=nullptr) {
-                            __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
-                        }
-                    }
-                    if (bytes_read < 0) {
-                        // ERROR: should close
-                        ALOGE("READ FAILED, force stop");
+                fds[0].fd = tty_fd;
+                fds[0].events = POLLIN;
+                while(keep_run) {
+                    ret = poll(fds, 1, TIMEOUT);
+                    if (ret < 0) {
+                        // FAILED. MUST exist
+                        ALOGE("POLL FAILED, force stop");
                         keep_run = false;
                         break;
+                    } else if (ret == 0) {
+                        // TIMEOUT.
+                    } else {
+                        char buffer[BUFFER_SIZE];
+                        ssize_t bytes_read;
+                        // Read all available data
+                        while ((bytes_read = read(tty_fd, buffer, sizeof(buffer))) > 0) {
+                            ALOGI("Read %i bytes", bytes_read);
+                            std::string __str(buffer, bytes_read);
+
+                            if(__callback!=nullptr) {
+                                __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                            }
+                        }
                     }
                 }
-            }
-            ALOGI("Stop listen");
-        });
+                ALOGI("Stop listen");
+            });
+        } else {
+            ALOGE("Device busy");
+            ret = Status::UNKNOWN_ERROR;
+        }
 
-        return Status::NO_ERROR;
+        return ret;
     };
 
     Return<Status> Cavuart::close_port() {
@@ -218,9 +239,13 @@ namespace implementation {
         listenner->join();
         delete listenner;
 
-        close(tty_fd);
-        tty_fd = -1;
-        __callback = nullptr;
+        if ( tty_fd > 0 ) {
+            ioctl(tty_fd, USERIAL_OP_CLK_OFF);
+            close(tty_fd);
+            tty_fd = -1;
+        } else {
+            return Status::UNKNOWN_ERROR;
+        }
         return Status::NO_ERROR;
     };
 
@@ -229,15 +254,19 @@ namespace implementation {
         int sz = data.size(), n;
         char * tx_buf = 0;
 
-        tx_buf = new char[sz];
-        std::copy(data.begin(), data.end(), tx_buf);
-        ALOGI("transmit len=%i str=%s", sz, tx_buf);
+        if ( tty_fd > 0 ) {
+            tx_buf = new char[sz];
+            std::copy(data.begin(), data.end(), tx_buf);
+            ALOGI("transmit len=%i str=%s", sz, tx_buf);
 
-        do {
-            n = write(tty_fd, tx_buf, sz);
-        } while ( n < 0 && errno == EINTR );
+            do {
+                n = write(tty_fd, tx_buf, sz);
+            } while ( n < 0 && errno == EINTR );
 
-        delete tx_buf;
+            delete tx_buf;
+        } else {
+            return Status::UNKNOWN_ERROR;
+        }
         return Status::NO_ERROR;
     };
 
@@ -263,13 +292,17 @@ namespace implementation {
         int stopbits = 1;
         int noreset = 0;
         
+        if ( tty_fd <= 0 ) {
+            return Status::UNKNOWN_ERROR;
+        }
+        
         baud = convert_baud(config.baudRate);
         stopbits = convert_stopbits(config.stopBits);
         parity = convert_parity(config.parity);
         flow = convert_flow(config.hardwareFlowControl);
 
         ret = term_set(tty_fd,
-                1,              /* raw mode. */
+                0,              /* raw mode. */
                 baud,           /* baud rate. */
                 parity,         /* parity. */
                 databits,       /* data bits. */
