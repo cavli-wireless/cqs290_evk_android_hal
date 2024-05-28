@@ -58,52 +58,52 @@ namespace uart {
 namespace V1_0 {
 namespace implementation {
 
-    int Cavuart::convert_baud(UartBaudRate baud) {
-        int value = 115200;
+    uint32_t Cavuart::convert_baud(UartBaudRate baud) {
+        uint32_t value = B115200;
         switch(baud) {
             case UartBaudRate::BAUD_1200 :
             {
-                value = 1200;
+                value = B1200;
             }
             case UartBaudRate::BAUD_2400 :
             {
-                value = 2400;
+                value = B2400;
             }
             case UartBaudRate::BAUD_4800 :
             {
-                value = 4800;
+                value = B4800;
             }
             case UartBaudRate::BAUD_9600 :
             {
-                value = 9600;
+                value = B9600;
             }
             case UartBaudRate::BAUD_19200 :
             {
-                value = 19200;
+                value = B19200;
             }
             case UartBaudRate::BAUD_38400 :
             {
-                value = 38400;
+                value = B38400;
             }
             case UartBaudRate::BAUD_57600 :
             {
-                value = 57600;
+                value = B57600;
             }
             case UartBaudRate::BAUD_115200 :
             {
-                value = 115200;
+                value = B115200;
             }
             case UartBaudRate::BAUD_230400 :
             {
-                value = 230400;
+                value = B230400;
             }
             case UartBaudRate::BAUD_460800 :
             {
-                value = 460800;
+                value = B460800;
             }
             case UartBaudRate::BAUD_921600 :
             {
-                value = 921600;
+                value = B921600;
             }
             default:
             {
@@ -117,7 +117,7 @@ namespace implementation {
         switch(stopbits) {
             case UartStopBits::ONE :
             {
-                value = 1;
+                value = 0;
             }
             case UartStopBits::ONE_AND_HALF :
             {
@@ -125,7 +125,7 @@ namespace implementation {
             }
             case UartStopBits::TWO :
             {
-                value = 3;
+                value = 2;
             }
             default:
             {
@@ -160,20 +160,20 @@ namespace implementation {
         return value;
     };
 
-    parity_e Cavuart::convert_parity(UartParity parity) {
-        parity_e value = P_NONE;
+    uint16_t Cavuart::convert_parity(UartParity parity) {
+        uint16_t value = P_NONE;
         switch(parity) {
             case UartParity::NONE :
             {
-                value = P_NONE;
+                value = 0;
             }
             case UartParity::EVEN :
             {
-                value = P_EVEN;
+                value = PARENB;
             }
             case UartParity::ODD :
             {
-                value = P_ODD;
+                value = (PARENB | PARODD);
             }
             default:
             {
@@ -185,6 +185,9 @@ namespace implementation {
     Return<Status> Cavuart::open_port(const hidl_string& name) {
         (void)name;
         Return<Status> ret = Status::NO_ERROR;
+        
+        ALOGI("open_port");
+        
         if( tty_fd > 0 ) {
             ioctl(tty_fd, USERIAL_OP_CLK_OFF);
             close(tty_fd);
@@ -215,7 +218,7 @@ namespace implementation {
                         ssize_t bytes_read;
                         // Read all available data
                         while ((bytes_read = read(tty_fd, buffer, sizeof(buffer))) > 0) {
-                            ALOGI("Read %i bytes", bytes_read);
+                            ALOGI("Read %zi bytes", bytes_read);
                             std::string __str(buffer, bytes_read);
 
                             if(__callback!=nullptr) {
@@ -238,6 +241,8 @@ namespace implementation {
         keep_run = false;
         listenner->join();
         delete listenner;
+
+        ALOGI("close_port");
 
         if ( tty_fd > 0 ) {
             ioctl(tty_fd, USERIAL_OP_CLK_OFF);
@@ -284,32 +289,41 @@ namespace implementation {
 
     Return<Status> Cavuart::configure(const UartConfig& config) {
         (void)config;
-        int ret;
         int baud = 115200;
         enum flowcntrl_e flow = FC_NONE;
-        enum parity_e parity = P_NONE;
-        int databits = 8;
+        uint16_t parity = P_NONE;
         int stopbits = 1;
-        int noreset = 0;
-        
+        struct termios termios;
+
+        ALOGI("Run configure");
         if ( tty_fd <= 0 ) {
             return Status::UNKNOWN_ERROR;
         }
-        
         baud = convert_baud(config.baudRate);
         stopbits = convert_stopbits(config.stopBits);
         parity = convert_parity(config.parity);
         flow = convert_flow(config.hardwareFlowControl);
+        ALOGI("config baud=%i", baud);
 
-        ret = term_set(tty_fd,
-                0,              /* raw mode. */
-                baud,           /* baud rate. */
-                parity,         /* parity. */
-                databits,       /* data bits. */
-                stopbits,       /* stop bits. */
-                flow,           /* flow control. */
-                1,              /* local or modem */
-                !noreset);      /* hup-on-close. */
+        tcflush(tty_fd, TCIOFLUSH);
+        tcgetattr(tty_fd, &termios);
+        cfmakeraw(&termios);
+
+        /* Set UART Control Modes */
+        termios.c_cflag &= ~(CRTSCTS);
+        termios.c_cflag |= stopbits;
+        termios.c_cflag |= CLOCAL;
+        if ( flow != FC_NONE ) {
+            /* Enable CTS/RTS flow control */
+            termios.c_cflag |= (CRTSCTS); 
+        }
+        tcsetattr(tty_fd, TCSANOW, &termios);
+        tcflush(tty_fd, TCIOFLUSH);
+        tcflush(tty_fd, TCIOFLUSH);
+
+        cfsetospeed(&termios, baud);
+        cfsetispeed(&termios, baud);
+        tcsetattr(tty_fd, TCSANOW, &termios);
         return Status::NO_ERROR;
     };
 

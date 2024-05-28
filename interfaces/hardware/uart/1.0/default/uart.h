@@ -47,10 +47,10 @@ private:
     sp<IUartCallback> __callback = nullptr;
 
 private:
-    int convert_baud(UartBaudRate baud);
+    uint32_t convert_baud(UartBaudRate baud);
     int convert_stopbits(UartStopBits stopbits);
     flowcntrl_e convert_flow(UartHardwareFlowControl flow);
-    parity_e convert_parity(UartParity parity);
+    uint16_t convert_parity(UartParity parity);
 
     /**
      * Open
