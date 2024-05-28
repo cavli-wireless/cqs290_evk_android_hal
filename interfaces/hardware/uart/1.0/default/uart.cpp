@@ -64,46 +64,57 @@ namespace implementation {
             case UartBaudRate::BAUD_1200 :
             {
                 value = B1200;
+                break;
             }
             case UartBaudRate::BAUD_2400 :
             {
                 value = B2400;
+                break;
             }
             case UartBaudRate::BAUD_4800 :
             {
                 value = B4800;
+                break;
             }
             case UartBaudRate::BAUD_9600 :
             {
                 value = B9600;
+                break;
             }
             case UartBaudRate::BAUD_19200 :
             {
                 value = B19200;
+                break;
             }
             case UartBaudRate::BAUD_38400 :
             {
                 value = B38400;
+                break;
             }
             case UartBaudRate::BAUD_57600 :
             {
                 value = B57600;
+                break;
             }
             case UartBaudRate::BAUD_115200 :
             {
                 value = B115200;
+                break;
             }
             case UartBaudRate::BAUD_230400 :
             {
                 value = B230400;
+                break;
             }
             case UartBaudRate::BAUD_460800 :
             {
                 value = B460800;
+                break;
             }
             case UartBaudRate::BAUD_921600 :
             {
                 value = B921600;
+                break;
             }
             default:
             {
