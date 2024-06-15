@@ -153,16 +153,6 @@ namespace implementation {
                 value = B3500000;
                 break;
             }
-            case UartBaudRate::BAUD_3200000 :
-            {
-                value = B3200000;
-                break;
-            }
-            case UartBaudRate::BAUD_3686400 :
-            {
-                value = B3686400;
-                break;
-            }
             case UartBaudRate::BAUD_4000000 :
             {
                 value = B4000000;
@@ -278,15 +268,15 @@ namespace implementation {
                         // TIMEOUT.
                     } else {
                         char buffer[BUFFER_SIZE];
-                        ssize_t bytes_read, total_bytes_read=0;
+                        ssize_t bytes_read;
                         // Read all available data
-                        while ((bytes_read = read(tty_fd, buffer+total_bytes_read, BUFFER_SIZE-total_bytes_read )) > 0) {
-                            total_bytes_read+=bytes_read;
-                        }
-                        ALOGI("total_bytes_read=%zi bytes", total_bytes_read);
-                        std::string __str(buffer, total_bytes_read);
-                        if(__callback!=nullptr) {
-                            __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                        while ((bytes_read = read(tty_fd, buffer, sizeof(buffer))) > 0) {
+                            ALOGI("Read %zi bytes", bytes_read);
+                            std::string __str(buffer, bytes_read);
+
+                            if(__callback!=nullptr) {
+                                __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                            }
                         }
                     }
                 }
