@@ -45,6 +45,8 @@ private:
     std::thread * listenner;
     bool keep_run;
     sp<IUartCallback> __callback = nullptr;
+public:
+    Cavuart();
 
 private:
     uint32_t convert_baud(UartBaudRate baud);

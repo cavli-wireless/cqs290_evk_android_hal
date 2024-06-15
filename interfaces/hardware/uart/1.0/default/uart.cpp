@@ -246,67 +246,59 @@ namespace implementation {
         ALOGI("open_port");
 
         if( tty_fd > 0 ) {
-            ALOGW("Already open");
-        } else {
-            tty_fd = open(name.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-            if ( tty_fd > 0 ) {
-                ioctl(tty_fd, USERIAL_OP_CLK_ON);
-                keep_run = true;
-                
-                if ( nullptr == listenner) {
-                    listenner = new std::thread([&](){
-                        struct pollfd fds[1];
-                        int ret;
-                        char buffer[BUFFER_SIZE];
-                        int bytes_read=0;
-                        int total_bytes_read=0;
+            close_port();
+        }
 
-                        fds[0].fd = tty_fd;
-                        fds[0].events = POLLIN;
-                        while(keep_run) {
-                            ret = poll(fds, 1, TIMEOUT);
-                            if (ret < 0) {
-                                // FAILED. MUST exist
-                                ALOGE("POLL FAILED, force stop");
-                                keep_run = false;
-                                break;
-                            } else if (ret == 0) {
-                                // TIMEOUT.
-                            } else {
-                                // Read all available data
-                                do {
-                                    bytes_read = read(tty_fd, (&buffer[total_bytes_read]), (sizeof(buffer)-total_bytes_read));
-                                    if(bytes_read>0) {
-                                        ALOGI("[1] total_bytes_read %zi bytes", total_bytes_read);
-                                        ALOGI("Read %zi bytes", bytes_read);
-                                        total_bytes_read = bytes_read + total_bytes_read;
-                                        ALOGI("[2] total_bytes_read %zi bytes", total_bytes_read);
-                                    } else {
-                                        // Try one more time
-                                        ALOGI("Try one more time");
-                                        ret = poll(fds, 1, 10);
-                                        if (ret<=0) {
-                                            ALOGI("Just leave.");
-                                            break;
-                                        }
-                                    }
-                                } while (true);
+        tty_fd = open(name.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
+        if ( tty_fd > 0 ) {
+            ioctl(tty_fd, USERIAL_OP_CLK_ON);
+            keep_run = true;
+            
+            if ( nullptr == listenner) {
+                listenner = new std::thread([&](){
+                    struct pollfd fds[1];
+                    int ret;
+                    char buffer[BUFFER_SIZE];
+                    ssize_t bytes_read=0;
+                    ssize_t total_bytes_read=0;
 
-                                if( total_bytes_read>0 && __callback!=nullptr) {
-                                    std::string __str(buffer, total_bytes_read);
-                                    ALOGI("total_bytes_read %zi bytes", total_bytes_read);
-                                    __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
-                                    total_bytes_read=0;
+                    fds[0].fd = tty_fd;
+                    fds[0].events = POLLIN;
+                    while(keep_run) {
+                        ret = poll(fds, 1, TIMEOUT);
+                        if (ret < 0) {
+                            // FAILED. MUST exist
+                            ALOGE("POLL FAILED, force stop");
+                            keep_run = false;
+                            break;
+                        } else if (ret == 0) {
+                            // TIMEOUT.
+                        } else {
+                            // Read all available data
+                            do {
+                                bytes_read = read(tty_fd, (&buffer[total_bytes_read]), (sizeof(buffer)-total_bytes_read));
+                                if(bytes_read>0) {
+                                    ALOGI("[1] total_bytes_read %zi bytes", total_bytes_read);
+                                    ALOGI("Read %zi bytes", bytes_read);
+                                    total_bytes_read = bytes_read + total_bytes_read;
+                                    ALOGI("[2] total_bytes_read %zi bytes", total_bytes_read);
                                 }
+                            } while (bytes_read>0);
+
+                            if( total_bytes_read>0 && __callback!=nullptr) {
+                                std::string __str(buffer, total_bytes_read);
+                                ALOGI("total_bytes_read %zi bytes", total_bytes_read);
+                                __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                                total_bytes_read=0;
                             }
                         }
-                        ALOGI("Stop listen");
-                    });
-                };
-            } else {
-                ALOGE("Device busy");
-                ret = Status::UNKNOWN_ERROR;
-            }
+                    }
+                    ALOGI("Stop listen");
+                });
+            };
+        } else {
+            ALOGE("Device busy");
+            ret = Status::UNKNOWN_ERROR;
         }
 
         return ret;
