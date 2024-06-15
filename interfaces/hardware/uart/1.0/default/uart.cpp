@@ -330,7 +330,7 @@ namespace implementation {
         if ( tty_fd > 0 ) {
             tx_buf = new char[sz];
             std::copy(data.begin(), data.end(), tx_buf);
-            ALOGI("transmit len=%i str=%s", sz, tx_buf);
+            ALOGI("transmit len=%i", sz);
 
             do {
                 n = write(tty_fd, tx_buf, sz);
