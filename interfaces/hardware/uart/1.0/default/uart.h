@@ -39,7 +39,7 @@ using ::android::sp;
 struct Cavuart : public IUart {
 private:
     const int TIMEOUT = 10;
-    const int BUFFER_SIZE = 1024;
+    const int BUFFER_SIZE = 1024*64;
 private:
     int tty_fd;
     std::thread * listenner;
