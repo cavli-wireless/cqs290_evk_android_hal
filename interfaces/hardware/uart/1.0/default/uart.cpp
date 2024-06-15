@@ -235,56 +235,78 @@ namespace implementation {
         return value;
     };
 
+    Cavuart::Cavuart(void) {
+        listenner = nullptr;
+    }
+
     Return<Status> Cavuart::open_port(const hidl_string& name) {
         (void)name;
         Return<Status> ret = Status::NO_ERROR;
-        
+
         ALOGI("open_port");
-        
+
         if( tty_fd > 0 ) {
-            ioctl(tty_fd, USERIAL_OP_CLK_OFF);
-            close(tty_fd);
-            tty_fd = -1;
-        }
-        tty_fd = open(name.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
-        if ( tty_fd > 0 ) {
-            ioctl(tty_fd, USERIAL_OP_CLK_ON);
-            keep_run = true;
-            
-            listenner = new std::thread([&](){
-                struct pollfd fds[1];
-                int ret;
-
-                fds[0].fd = tty_fd;
-                fds[0].events = POLLIN;
-                while(keep_run) {
-                    ret = poll(fds, 1, TIMEOUT);
-                    if (ret < 0) {
-                        // FAILED. MUST exist
-                        ALOGE("POLL FAILED, force stop");
-                        keep_run = false;
-                        break;
-                    } else if (ret == 0) {
-                        // TIMEOUT.
-                    } else {
+            ALOGW("Already open");
+        } else {
+            tty_fd = open(name.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
+            if ( tty_fd > 0 ) {
+                ioctl(tty_fd, USERIAL_OP_CLK_ON);
+                keep_run = true;
+                
+                if ( nullptr == listenner) {
+                    listenner = new std::thread([&](){
+                        struct pollfd fds[1];
+                        int ret;
                         char buffer[BUFFER_SIZE];
-                        ssize_t bytes_read;
-                        // Read all available data
-                        while ((bytes_read = read(tty_fd, buffer, sizeof(buffer))) > 0) {
-                            ALOGI("Read %zi bytes", bytes_read);
-                            std::string __str(buffer, bytes_read);
+                        int bytes_read=0;
+                        int total_bytes_read=0;
 
-                            if(__callback!=nullptr) {
-                                __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                        fds[0].fd = tty_fd;
+                        fds[0].events = POLLIN;
+                        while(keep_run) {
+                            ret = poll(fds, 1, TIMEOUT);
+                            if (ret < 0) {
+                                // FAILED. MUST exist
+                                ALOGE("POLL FAILED, force stop");
+                                keep_run = false;
+                                break;
+                            } else if (ret == 0) {
+                                // TIMEOUT.
+                            } else {
+                                // Read all available data
+                                do {
+                                    bytes_read = read(tty_fd, (&buffer[total_bytes_read]), (sizeof(buffer)-total_bytes_read));
+                                    if(bytes_read>0) {
+                                        ALOGI("[1] total_bytes_read %zi bytes", total_bytes_read);
+                                        ALOGI("Read %zi bytes", bytes_read);
+                                        total_bytes_read = bytes_read + total_bytes_read;
+                                        ALOGI("[2] total_bytes_read %zi bytes", total_bytes_read);
+                                    } else {
+                                        // Try one more time
+                                        ALOGI("Try one more time");
+                                        ret = poll(fds, 1, 10);
+                                        if (ret<=0) {
+                                            ALOGI("Just leave.");
+                                            break;
+                                        }
+                                    }
+                                } while (true);
+
+                                if( total_bytes_read>0 && __callback!=nullptr) {
+                                    std::string __str(buffer, total_bytes_read);
+                                    ALOGI("total_bytes_read %zi bytes", total_bytes_read);
+                                    __callback->onDataReceived(hidl_vec<uint8_t>(__str.begin(), __str.end()));
+                                    total_bytes_read=0;
+                                }
                             }
                         }
-                    }
-                }
-                ALOGI("Stop listen");
-            });
-        } else {
-            ALOGE("Device busy");
-            ret = Status::UNKNOWN_ERROR;
+                        ALOGI("Stop listen");
+                    });
+                };
+            } else {
+                ALOGE("Device busy");
+                ret = Status::UNKNOWN_ERROR;
+            }
         }
 
         return ret;
@@ -294,6 +316,7 @@ namespace implementation {
         keep_run = false;
         listenner->join();
         delete listenner;
+        listenner = nullptr;
 
         ALOGI("close_port");
 
@@ -366,6 +389,10 @@ namespace implementation {
         termios.c_cflag &= ~(CRTSCTS);
         termios.c_cflag |= stopbits;
         termios.c_cflag |= CLOCAL;
+
+        termios.c_cc[VTIME]    = 0;   /* inter-character timer 10ms */
+        termios.c_cc[VMIN]     = 1;    /* blocking read until 1 chars received */
+
         if ( flow != FC_NONE ) {
             /* Enable CTS/RTS flow control */
             termios.c_cflag |= (CRTSCTS); 

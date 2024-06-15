@@ -23,7 +23,6 @@ import android.provider.TimeZoneRulesDataContract;
 import android.util.Log;
 import android.util.Pair;
 
-import java.lang.ref.WeakReference;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -115,17 +114,16 @@ public class CavliUart {
 
     private static final class CallbackHandler extends Handler {
         private static final int MSG_ON_DATA_RECV = 1;
-        private final WeakReference<ICavliUartCallback> mCallback;
+        private final ICavliUartCallback mCallback;
 
         CallbackHandler(Looper looper, ICavliUartCallback callback) {
             super(looper);
-            mCallback = new WeakReference<ICavliUartCallback>(callback);
+            mCallback = callback; // strong reference
         }
 
         @Override
         public void handleMessage(Message msg) {
-            ICavliUartCallback callback = mCallback.get();
-            if (callback == null) {
+            if (mCallback == null) {
                 Log.i(TAG, "handleMessage null callback");
                 return;
             }
@@ -133,7 +131,7 @@ public class CavliUart {
             try {
                 switch (msg.what) {
                     case MSG_ON_DATA_RECV:
-                        callback.onDataReceived((ArrayList<Byte>) msg.obj);
+                        mCallback.onDataReceived((ArrayList<Byte>) msg.obj);
                         break;
                     default:
                         Log.e(TAG, "Unexpected message: " + msg.what);
