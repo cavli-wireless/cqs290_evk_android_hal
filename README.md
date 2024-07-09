@@ -39,11 +39,11 @@ The following demo instructs you on how to use I2C/SPI/UART from an Android Appl
 
 ### Method 1: Only clone the demo repo
 
-  - Step 1: Clone the demo [repo](https://github.com/cavli-wireless/valeo_cqs290_android_hal) into the following locations for both projects, bengal and qssi_12:
+  - Step 1: Clone the demo [repo](https://github.com/cavli-wireless/cqs290_evk_android_hal/tree/common/demo_custom_hal) into the following locations for both projects, bengal and qssi_12:
     ```
     # bengal_2w
     cd vendor
-    git clone https://github.com/cavli-wireless/valeo_cqs290_android_hal -b common/demo_custom_hal common
+    git clone https://github.com/cavli-wireless/cqs290_evk_android_hal -b common/demo_custom_hal common
     # similarly for qssi_12
     ```
   - Step 2 : Apply patches
@@ -69,9 +69,11 @@ The following demo instructs you on how to use I2C/SPI/UART from an Android Appl
   ```
   repo init --depth=1 -u git@github.com:cavli-wireless/cqs290_dev_manifest.git -b feature/nesh_demo_custom_hal -m android_12_dev.xml --repo-url=https://git.codelinaro.org/clo/tools/repo.git --repo-branch=qc-stable
   repo sync -j64
+  repo forall -c 'git lfs pull'
   ```
 #### Clone bengal_2w
   ```
   repo init --depth=1 -u git@github.com:cavli-wireless/cqs290_dev_manifest.git -b feature/nesh_demo_custom_hal -m android_11_dev.xml --repo-url=https://git.codelinaro.org/clo/tools/repo.git --repo-branch=qc-stable
   repo sync -j64
+  repo forall -c 'git lfs pull'
   ```

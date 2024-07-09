@@ -1,0 +1,20 @@
+From e89305dd4dd9ffadda1f5d6ba7ddbff2a477935f Mon Sep 17 00:00:00 2001
+From: "khoa.dang" <khoa.dang@cavliwireless.com>
+Date: Tue, 9 Jul 2024 23:42:26 +0000
+Subject: [PATCH] demo::nesh:: include target demo
+
+
+diff --git a/qssi/qssi.mk b/qssi/qssi.mk
+index 6bdc176..f2a9535 100644
+--- a/qssi/qssi.mk
++++ b/qssi/qssi.mk
+@@ -325,3 +325,6 @@ PRODUCT_PACKAGES += MqttListener
+ ###################################################################################
+ $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
+ ###################################################################################
++
++include vendor/common/common/config/qssi_cavlidemo.mk
++
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
 From c3d0318617c9bf56d8a800bdcef757ad4311020a Mon Sep 17 00:00:00 2001
 From: "khoa.dang" <khoa.dang@cavliwireless.com>
 Date: Wed, 8 May 2024 04:41:21 +0000
-Subject: [PATCH] OK
+Subject: nesh::demo:: Include for demo
 
 
 diff --git a/bengal_2w/bengal_2w.mk b/bengal_2w/bengal_2w.mk
@@ -13,7 +13,7 @@ index 02729e2..5d05900 100644
  ###################################################################################
  include vendor/cavli/cqs290/cqs290.mk
 +
-+include vendor/common/common/config/spi.mk
++include vendor/common/common/config/cavlidemo.mk
 -- 
 2.7.4
 

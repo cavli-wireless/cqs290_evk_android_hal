@@ -1,0 +1,84 @@
+From e26603d40770d5b85c199fae02c17754730f0b00 Mon Sep 17 00:00:00 2001
+From: "khoa.dang" <khoa.dang@cavliwireless.com>
+Date: Tue, 9 Jul 2024 23:32:49 +0000
+Subject: [PATCH] demo::nesh:: Add device tree and compatibility for new hal
+
+
+diff --git a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+index 4437c28..9933aa5 100644
+--- a/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
++++ b/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
+@@ -1033,4 +1033,24 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+             <instance>default</instance>
+         </interface>
+     </hal>
++    <hal format="hidl" optional="true">
++        <name>vendor.cavli.hardware.spi</name>
++        <transport>hwbinder</transport>
++        <impl level="generic"></impl>
++        <version>1.0</version>
++        <interface>
++            <name>ISpi</name>
++            <instance>default</instance>
++        </interface>
++    </hal>
++    <hal format="hidl" optional="true">
++        <name>vendor.cavli.hardware.uart</name>
++        <transport>hwbinder</transport>
++        <impl level="generic"></impl>
++        <version>1.0</version>
++        <interface>
++            <name>IUart</name>
++            <instance>default</instance>
++        </interface>
++    </hal>
+ </compatibility-matrix>
+diff --git a/qcom/proprietary/devicetree-4.19/qcom/scuba-iot-idp.dtsi b/qcom/proprietary/devicetree-4.19/qcom/scuba-iot-idp.dtsi
+index 945b309..3072d1c 100755
+--- a/qcom/proprietary/devicetree-4.19/qcom/scuba-iot-idp.dtsi
++++ b/qcom/proprietary/devicetree-4.19/qcom/scuba-iot-idp.dtsi
+@@ -525,7 +525,7 @@
+ };
+ 
+ &qupv3_se5_spi {
+-	status = "ok";
++	status = "disable";
+ 	// can-controller@0 {
+ 	// 	compatible = "qcom,nxp,s32k144";
+ 	// 	reg = <0>;
+@@ -594,7 +594,7 @@
+ // };
+ 
+ &qupv3_se0_spi {
+-	status = "okay";
++	status = "disabled";
+ 	spidev@0 {
+ 		compatible = "qcom,spidev";
+ 		reg = <0>;
+diff --git a/qcom/proprietary/devicetree-4.19/qcom/scuba.dtsi b/qcom/proprietary/devicetree-4.19/qcom/scuba.dtsi
+index ae19073..fcea1ac 100755
+--- a/qcom/proprietary/devicetree-4.19/qcom/scuba.dtsi
++++ b/qcom/proprietary/devicetree-4.19/qcom/scuba.dtsi
+@@ -42,6 +42,8 @@
+ 		sdhc2 = &sdhc_2; /* SDC2 SD Card slot */
+ 		swr0 = &swr0;
+ 		swr1 = &swr1;
++		hsuart0 = &qupv3_se3_4uart;
++		hsuart1 = &qupv3_se0_4uart;
+ 	};
+ 
+ 	cpus {
+@@ -2707,6 +2709,10 @@
+ 	status = "ok";
+ };
+ 
++&qupv3_se0_4uart {
++	status = "ok";
++};
++
+ &soc {
+ 	gpio_keys {
+ 		compatible = "gpio-keys";
+-- 
+2.7.4
+
