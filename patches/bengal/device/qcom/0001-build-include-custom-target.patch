@@ -1,19 +1,20 @@
-From c3d0318617c9bf56d8a800bdcef757ad4311020a Mon Sep 17 00:00:00 2001
+From 5c3a63248e765fc8e449913fb5f792b9a88b8beb Mon Sep 17 00:00:00 2001
 From: "khoa.dang" <khoa.dang@cavliwireless.com>
-Date: Wed, 8 May 2024 04:41:21 +0000
-Subject: nesh::demo:: Include for demo
+Date: Mon, 5 Aug 2024 09:36:00 +0000
+Subject: [PATCH] add
 
 
 diff --git a/bengal_2w/bengal_2w.mk b/bengal_2w/bengal_2w.mk
-index 02729e2..5d05900 100644
+index 2986b42..14b4023 100644
 --- a/bengal_2w/bengal_2w.mk
 +++ b/bengal_2w/bengal_2w.mk
-@@ -399,3 +399,5 @@ $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/system/*.mk)
- $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
- ###################################################################################
- include vendor/cavli/cqs290/cqs290.mk
+@@ -406,3 +406,6 @@ $(call inherit-product-if-exists, vendor/qcom/defs/product-defs/vendor/*.mk)
+ 
+ # Add the vendor specific product.mk files
+ $(call inherit-product-if-exists, vendor/cavli/cqs290/cqs290.mk)
 +
 +include vendor/common/common/config/cavlidemo.mk
++
 -- 
 2.7.4
 
