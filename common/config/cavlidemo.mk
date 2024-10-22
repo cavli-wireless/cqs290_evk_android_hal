@@ -3,13 +3,10 @@ PRODUCT_PACKAGES += vendor.cavli.hardware.spi@1.0 \
                     spi_client_test \
                     spidev_test \
                     cavli-hw-service-lib \
-                    cavlidemo
 
 PRODUCT_PACKAGES += vendor.cavli.hardware.uart@1.0 \
                     vendor.cavli.hardware.uart@1.0-service \
                     uart_client_test \
-                    picocom \
-                    cavliuartdemo
 
 # Add cavli manifest
 DEVICE_MANIFEST_FILE += vendor/common/device/manifest.xml
