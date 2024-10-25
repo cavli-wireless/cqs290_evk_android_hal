@@ -160,6 +160,7 @@ namespace implementation {
             }
             default:
             {
+                break;
             };
         }
         return value;
@@ -171,17 +172,21 @@ namespace implementation {
             case UartStopBits::ONE :
             {
                 value = 0;
+                break;
             }
             case UartStopBits::ONE_AND_HALF :
             {
                 value = 2;
+                break;
             }
             case UartStopBits::TWO :
             {
                 value = 2;
+                break;
             }
             default:
             {
+                break;
             };
         }
         return value;
@@ -193,18 +198,22 @@ namespace implementation {
             case UartHardwareFlowControl::NONE :
             {
                 value = FC_NONE;
+                break;
             }
             case UartHardwareFlowControl::RTS_CTS :
             {
                 value = FC_RTSCTS;
+                break;
             }
             case UartHardwareFlowControl::DTR_DSR :
             {
                 value = FC_OTHER;
+                break;
             }
             case UartHardwareFlowControl::XON_XOFF :
             {
                 value = FC_XONXOFF;
+                break;
             }
             default:
             {
@@ -219,14 +228,17 @@ namespace implementation {
             case UartParity::NONE :
             {
                 value = 0;
+                break;
             }
             case UartParity::EVEN :
             {
                 value = PARENB;
+                break;
             }
             case UartParity::ODD :
             {
                 value = (PARENB | PARODD);
+                break;
             }
             default:
             {
@@ -236,6 +248,7 @@ namespace implementation {
     };
 
     Cavuart::Cavuart(void) {
+        tty_fd = -1;
         listenner = nullptr;
     }
 
@@ -243,9 +256,8 @@ namespace implementation {
         (void)name;
         Return<Status> ret = Status::NO_ERROR;
 
-        ALOGI("open_port");
-
-        if( tty_fd > 0 ) {
+        if( tty_fd == -1 ) {
+            ALOGI("Reset port");
             close_port();
         }
 
@@ -253,7 +265,6 @@ namespace implementation {
         if ( tty_fd > 0 ) {
             ioctl(tty_fd, USERIAL_OP_CLK_ON);
             keep_run = true;
-            
             if ( nullptr == listenner) {
                 listenner = new std::thread([&](){
                     struct pollfd fds[1];
@@ -266,6 +277,7 @@ namespace implementation {
                     fds[0].events = POLLIN;
                     while(keep_run) {
                         ret = poll(fds, 1, TIMEOUT);
+                        // ALOGI("1/ Done poll");
                         if (ret < 0) {
                             // FAILED. MUST exist
                             ALOGE("POLL FAILED, force stop");
@@ -277,11 +289,9 @@ namespace implementation {
                             // Read all available data
                             do {
                                 bytes_read = read(tty_fd, (&buffer[total_bytes_read]), (sizeof(buffer)-total_bytes_read));
+                                ALOGI("bytes_read %zi bytes", bytes_read);
                                 if(bytes_read>0) {
-                                    ALOGI("[1] total_bytes_read %zi bytes", total_bytes_read);
-                                    ALOGI("Read %zi bytes", bytes_read);
                                     total_bytes_read = bytes_read + total_bytes_read;
-                                    ALOGI("[2] total_bytes_read %zi bytes", total_bytes_read);
                                 }
                             } while (bytes_read>0);
 
@@ -305,16 +315,19 @@ namespace implementation {
     };
 
     Return<Status> Cavuart::close_port() {
-        keep_run = false;
-        listenner->join();
-        delete listenner;
-        listenner = nullptr;
-
         ALOGI("close_port");
-
+        keep_run = false;
+        if ( NULL != listenner )
+        {
+            listenner->join();
+            delete listenner;
+        }
+        listenner = nullptr;
         if ( tty_fd > 0 ) {
+            tcflush(tty_fd, TCOFLUSH);
             ioctl(tty_fd, USERIAL_OP_CLK_OFF);
             close(tty_fd);
+            ALOGI("close done tty_fd=%i", tty_fd);
             tty_fd = -1;
         } else {
             return Status::UNKNOWN_ERROR;
@@ -334,10 +347,12 @@ namespace implementation {
 
             do {
                 n = write(tty_fd, tx_buf, sz);
+                ALOGI("transmit tty_fd=%i n=%i errono=%i", tty_fd, n, errno);
             } while ( n < 0 && errno == EINTR );
 
             delete tx_buf;
         } else {
+            ALOGE("tty file description is UNVALID");
             return Status::UNKNOWN_ERROR;
         }
         return Status::NO_ERROR;
@@ -356,7 +371,6 @@ namespace implementation {
     };
 
     Return<Status> Cavuart::configure(const UartConfig& config) {
-        (void)config;
         int baud = 115200;
         enum flowcntrl_e flow = FC_NONE;
         uint16_t parity = P_NONE;
@@ -371,7 +385,8 @@ namespace implementation {
         stopbits = convert_stopbits(config.stopBits);
         parity = convert_parity(config.parity);
         flow = convert_flow(config.hardwareFlowControl);
-        ALOGI("config baud=%i", baud);
+        ALOGI("config baud=%i flow=%i hardwareFlowControl=%i", baud, flow,
+            config.hardwareFlowControl);
 
         tcflush(tty_fd, TCIOFLUSH);
         tcgetattr(tty_fd, &termios);
@@ -385,10 +400,27 @@ namespace implementation {
         termios.c_cc[VTIME]    = 0;   /* inter-character timer 10ms */
         termios.c_cc[VMIN]     = 1;    /* blocking read until 1 chars received */
 
-        if ( flow != FC_NONE ) {
-            /* Enable CTS/RTS flow control */
-            termios.c_cflag |= (CRTSCTS); 
+        switch (flow) {
+        case FC_RTSCTS:
+            ALOGI("-> FC_RTSCTS");
+            termios.c_cflag |= CRTSCTS;
+            termios.c_iflag &= ~(IXON | IXOFF | IXANY);
+            break;
+        case FC_XONXOFF:
+            ALOGI("-> FC_XONXOFF");
+            termios.c_cflag &= ~(CRTSCTS);
+            termios.c_iflag |= IXON | IXOFF;
+            break;
+        case FC_NONE:
+            ALOGI("-> FC_NONE");
+            termios.c_cflag &= ~(CRTSCTS);
+            termios.c_iflag &= ~(IXON | IXOFF | IXANY);
+            break;
+        default:
+            ALOGE("Config UNVALID");
+            break;
         }
+
         tcsetattr(tty_fd, TCSANOW, &termios);
         tcflush(tty_fd, TCIOFLUSH);
         tcflush(tty_fd, TCIOFLUSH);

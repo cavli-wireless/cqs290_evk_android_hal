@@ -67,7 +67,7 @@ public class CavliUart {
         mInternalCallback = new UartCallback(handler);
 
     }
-    
+
     public int open_port(String device) {
         int ret = -1;
         try {
@@ -90,7 +90,7 @@ public class CavliUart {
         }
         return ret;
     }
-    
+
     public int transmit(java.util.ArrayList<Byte> data) {
         int ret = -1;
         try {
@@ -141,21 +141,21 @@ public class CavliUart {
             }
         }
     }
-    
+
     private static final class UartCallback extends IUartCallback.Stub {
         private final Handler mHandler;
         private static final String TAG = "UartCallback";
-        
+
         public UartCallback(Handler handler) {
             mHandler = handler;
         }
-    
+
         @Override
         public void onDataReceived(ArrayList<Byte> arrayList) throws RemoteException {
             mHandler.sendMessage(Message.obtain(
                 mHandler, CallbackHandler.MSG_ON_DATA_RECV, arrayList));
         }
-        
+
     }
 
 }

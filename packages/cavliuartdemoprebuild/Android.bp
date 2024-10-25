@@ -1,9 +1,0 @@
-android_app_import {
-
-    name: "cavliuartdemoprebuild",
-    certificate: "platform",
-    privileged: true,
-
-    apk: "cavliuartdemoprebuild.apk",
-
-}
