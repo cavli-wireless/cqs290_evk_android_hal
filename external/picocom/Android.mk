@@ -35,7 +35,7 @@ LOCAL_SRC_FILES := \
 
 LOCAL_CFLAGS += -DVERSION_STR=\"$(VERSION)\"
 
-LOCAL_CFLAGS += -DTTY_Q_SZ=$(TTY_Q_SZ)
+LOCAL_CFLAGS += -DTTY_Q_SZ=$(TTY_Q_SZ) -Wno-unused-parameter
 
 ## Comment this out to disable high-baudrate support
 LOCAL_CFLAGS += -DHIGH_BAUD
